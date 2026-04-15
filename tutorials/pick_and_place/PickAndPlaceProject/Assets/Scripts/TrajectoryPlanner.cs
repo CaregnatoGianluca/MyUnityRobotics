@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEngine.Networking;
 using RosMessageTypes.Geometry;
 using RosMessageTypes.NiryoMoveit;
 using Unity.Robotics.ROSTCPConnector;
@@ -9,6 +11,22 @@ using UnityEngine;
 
 public class TrajectoryPlanner : MonoBehaviour
 {
+    public enum InputMode
+    {
+        RandomAutomated,
+        MouseClick,
+        GeminiVision
+    }
+
+    [Header("Input Mode Settings")]
+    public InputMode currentInputMode = InputMode.MouseClick;
+
+    [Header("Gemini Vision Settings")]
+    [HideInInspector] public string geminiApiKey = "";
+    [TextArea(3, 10)]
+    public string geminiPrompt = "Point to the cube. The label returned should be an identifying name for the object detected. The answer should follow the json format: [{\"point\": [y, x], \"label\": \"cube\"}]. The points are in [y, x] format normalized to 0-1000.";
+    public bool saveGeminiLogs = true;
+
     // Hardcoded variables
     const int k_NumRobotJoints = 6;
     const float k_JointAssignmentWait = 0.1f;
@@ -52,7 +70,7 @@ public class TrajectoryPlanner : MonoBehaviour
 
     void Update()
     {
-        if (m_WaitingForInput && Input.GetMouseButtonDown(0))
+        if (currentInputMode == InputMode.MouseClick && m_WaitingForInput && Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             Plane tablePlane = new Plane(Vector3.up, new Vector3(0, m_SpawnY, 0));
@@ -99,7 +117,8 @@ public class TrajectoryPlanner : MonoBehaviour
         }
 
         m_CurrentPickPosition = m_Target.transform.position;
-        m_WaitingForInput = true;
+        if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
+        else if (currentInputMode == InputMode.GeminiVision) StartCoroutine(PerformGeminiVisionRequest());
     }
 
     /// <summary>
@@ -202,7 +221,19 @@ public class TrajectoryPlanner : MonoBehaviour
                 targetRb.angularVelocity = Vector3.zero;
             }
 
-            m_WaitingForInput = true;
+            if (currentInputMode == InputMode.MouseClick)
+            {
+                m_WaitingForInput = true;
+            }
+            else if (currentInputMode == InputMode.RandomAutomated)
+            {
+                m_CurrentPickPosition = m_Target.transform.position;
+                PublishJoints();
+            }
+            else if (currentInputMode == InputMode.GeminiVision)
+            {
+                StartCoroutine(PerformGeminiVisionRequest());
+            }
         }
     }
 
@@ -261,8 +292,20 @@ public class TrajectoryPlanner : MonoBehaviour
             var targetPlacementComponent = m_TargetPlacement.GetComponent<Unity.Robotics.PickAndPlace.TargetPlacement>();
             if (targetPlacementComponent != null && targetPlacementComponent.CurrentState != Unity.Robotics.PickAndPlace.TargetPlacement.PlacementState.InsidePlaced)
             {
-                Debug.LogWarning("Pick and place sequence finished, but the cube isn't in the zone. Click again to retry!");
-                m_WaitingForInput = true;
+                Debug.LogWarning("Pick and place sequence finished, but the cube isn't in the zone. Retrying...");
+                if (currentInputMode == InputMode.MouseClick)
+                {
+                    m_WaitingForInput = true;
+                }
+                else if (currentInputMode == InputMode.RandomAutomated)
+                {
+                    m_CurrentPickPosition = m_Target.transform.position;
+                    PublishJoints();
+                }
+                else if (currentInputMode == InputMode.GeminiVision)
+                {
+                    StartCoroutine(PerformGeminiVisionRequest());
+                }
             }
         }
     }
@@ -278,7 +321,7 @@ public class TrajectoryPlanner : MonoBehaviour
     void OnTargetPlaced()
     {
         StartCoroutine(RestartRoutine());
-    }a
+    }
 
     IEnumerator RestartRoutine()
     {
@@ -297,7 +340,135 @@ public class TrajectoryPlanner : MonoBehaviour
             targetRb.angularVelocity = Vector3.zero;
         }
 
-        m_WaitingForInput = true;
+        if (currentInputMode == InputMode.MouseClick)
+        {
+            m_WaitingForInput = true;
+        }
+        else if (currentInputMode == InputMode.RandomAutomated)
+        {
+            m_CurrentPickPosition = m_Target.transform.position;
+            PublishJoints();
+        }
+        else if (currentInputMode == InputMode.GeminiVision)
+        {
+            StartCoroutine(PerformGeminiVisionRequest());
+        }
+    }
+
+    IEnumerator PerformGeminiVisionRequest()
+    {
+        string keyPath = System.IO.Path.Combine(Application.dataPath, "../gemini_api_key.txt");
+        if (System.IO.File.Exists(keyPath))
+        {
+            geminiApiKey = System.IO.File.ReadAllText(keyPath).Trim();
+        }
+        else
+        {
+            Debug.LogError("API Key file missing! Please open gemini_api_key.txt in your PickAndPlaceProject folder and paste your key.");
+            if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
+            yield break;
+        }
+
+        yield return new WaitForEndOfFrame();
+
+        Camera cam = Camera.main;
+        RenderTexture rt = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 24);
+        cam.targetTexture = rt;
+        Texture2D screenShot = new Texture2D(cam.pixelWidth, cam.pixelHeight, TextureFormat.RGB24, false);
+        cam.Render();
+        RenderTexture.active = rt;
+        screenShot.ReadPixels(new Rect(0, 0, cam.pixelWidth, cam.pixelHeight), 0, 0);
+        cam.targetTexture = null;
+        RenderTexture.active = null; 
+        Destroy(rt);
+
+        byte[] imageBytes = screenShot.EncodeToPNG();
+        string base64Image = System.Convert.ToBase64String(imageBytes);
+
+        string logDir = string.Empty;
+        if (saveGeminiLogs)
+        {
+            logDir = System.IO.Path.Combine(Application.dataPath, "../GeminiOutputs/Action_" + DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+            System.IO.Directory.CreateDirectory(logDir);
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(logDir, "raw_frame.png"), imageBytes);
+        }
+
+        string jsonPayload = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + geminiPrompt.Replace("\"", "\\\"").Replace("\n", " ") + "\" }, { \"inline_data\": { \"mime_type\": \"image/png\", \"data\": \"" + base64Image + "\" } } ] } ], \"generationConfig\": { \"temperature\": 1.0 } }";
+        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-robotics-er-1.6-preview:generateContent?key=" + geminiApiKey;
+
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            Debug.Log("Sending request to Gemini Robotics API...");
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Gemini API Error: " + request.error + " | " + request.downloadHandler.text);
+                if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
+            }
+            else
+            {
+                string responseText = request.downloadHandler.text;
+                Debug.Log("Gemini Response: " + responseText);
+
+                if (saveGeminiLogs && !string.IsNullOrEmpty(logDir))
+                {
+                    System.IO.File.WriteAllText(System.IO.Path.Combine(logDir, "gemini_response.json"), responseText);
+                }
+
+                Match match = Regex.Match(responseText, @"point.*?\[\s*(\d+)\s*,\s*(\d+)\s*\]");
+                if (match.Success)
+                {
+                    float yNorm = float.Parse(match.Groups[1].Value);
+                    float xNorm = float.Parse(match.Groups[2].Value);
+
+                    float screenX = cam.pixelWidth * (xNorm / 1000f);
+                    float screenY = cam.pixelHeight * (1f - (yNorm / 1000f)); 
+
+                    if (saveGeminiLogs && !string.IsNullOrEmpty(logDir))
+                    {
+                        int px = (int)screenX;
+                        int py = (int)screenY;
+                        for (int i = -10; i <= 10; i++)
+                        {
+                            for (int w = -1; w <= 1; w++)
+                            {
+                                if (px + i >= 0 && px + i < screenShot.width && py + w >= 0 && py + w < screenShot.height)
+                                    screenShot.SetPixel(px + i, py + w, Color.red);
+                                if (px + w >= 0 && px + w < screenShot.width && py + i >= 0 && py + i < screenShot.height)
+                                    screenShot.SetPixel(px + w, py + i, Color.red);
+                            }
+                        }
+                        screenShot.Apply();
+                        System.IO.File.WriteAllBytes(System.IO.Path.Combine(logDir, "labeled_frame.png"), screenShot.EncodeToPNG());
+                    }
+
+                    Ray ray = cam.ScreenPointToRay(new Vector3(screenX, screenY, 0));
+                    Plane tablePlane = new Plane(Vector3.up, new Vector3(0, m_SpawnY, 0));
+
+                    if (tablePlane.Raycast(ray, out float distance))
+                    {
+                        m_CurrentPickPosition = ray.GetPoint(distance);
+                        PublishJoints();
+                    }
+                    else 
+                    {
+                        Debug.LogError("Raycast from Gemini point did not hit table.");
+                        if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Could not parse point from Gemini response.");
+                    if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
+                }
+            }
+        }
     }
 
     Vector3 GetRandomPosition()
