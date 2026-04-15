@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "```json\n[\n  {\"point\": [373, 461], \"label\": \"cube\"}\n]\n```",
+            "thoughtSignature": "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"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 1139,
+    "candidatesTokenCount": 29,
+    "totalTokenCount": 1756,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 61
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1078
+      }
+    ],
+    "thoughtsTokenCount": 588
+  },
+  "modelVersion": "gemini-robotics-er-1.6-preview",
+  "responseId": "o1Xfaez8O4GcvdIPtJDtgAo"
+}

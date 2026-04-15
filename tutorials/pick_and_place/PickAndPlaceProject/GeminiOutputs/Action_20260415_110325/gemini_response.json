@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "```json\n[\n  {\"point\": [626, 628], \"label\": \"cube\"}\n]\n```",
+            "thoughtSignature": "EuYFCuMFAb4+9vvVJbp+vtNyEgqCw7K4yTzZy3ezK4J6cbSrCvnwc/5rlxmWQflF4Pt5OnnlZo3isXBl7/U7TsG2SO1EBwxhoccX/3Vmk/9XWl4/4BWKTU1cdRZzKVeRxD4+Bz0YdmzCLF+vWYh15cATR8TIRWw0gRpeedAP2lqui1uoYkuZa1MQ9rlsLCNx5pudOqYm6rzLu8R9r6DX1yd8eH2evgr1qJm2l8UVdf6FVJ1cAwIsTW6rKbyKvDo+SH2N5rhvpS38ixeYC3Sc5BXfayoCvQWY22rBmfTl5F/dLgAT7mCcofyrL/kfkBto/PAKOfbe/2zSATuiIyAHhhqTfbzzqxeeAU1GQUzB6kub9nGbV4gTGYLpXgHJXLJgfjYDJsBkKrTGBvow55pYXOwZyoH5d7N/DhX4CTv09gVnV1v+7w6fVCFrVo+klBAwBJWRtKcec00FwB2meMUh8vac2DyiQ0e+PtIkDsCysUIVhA7oU1TxcqX2n3qtimZ65g2K95Vjxpt5la1J/FCMiVk86d8mzGR1L3nrzPJPVCDtoTqXyNru5A3aAQwl523KJRCf1EqUi8GJibYrB2n4bxq40QwWldJyXMxdo9c6PdfZVEq7XcVEu6hMc7xvaJL+UCm0rb1ZoK9xYmS7qY9okJIYxV5rKbpLOjtc8VSEOK9htOYr/gkD+M4BP7yYUNqRnqPhp8imxb8bMl6Emp7j09NAG0c0GwDelaZorPwDAdwpelbESsSpiuv1onJIkmghWg6nSVKECnj81AOXiQYhld6pevdGOVEK5YzygoXr3rfj4IIoyFTI4pWykw/xS0249TMxKEgYrv2Rd3o7OQHPBFxyVlso079jcq2AsEHjMS8sGCYSGzY85qi7t378FiUo/gS5xrRCGb8Z78j6h7G8d9A6h/j6XJLdQhUEG7Bu0SyCOihEnGsqL6KdK9hmFpBVMtjkO0fXob1EhRUbzFc/M/KG8v8q0M2xrQ=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 1139,
+    "candidatesTokenCount": 29,
+    "totalTokenCount": 1410,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 61
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1078
+      }
+    ],
+    "thoughtsTokenCount": 242
+  },
+  "modelVersion": "gemini-robotics-er-1.6-preview",
+  "responseId": "X1TfaefZPJXi7M8PlYza8Qo"
+}

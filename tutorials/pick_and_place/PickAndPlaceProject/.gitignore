@@ -14,9 +14,9 @@
 
 
 # Ignore scripts that are expected to get copied in at some point
-/**/SourceDestinationPublisher.*
-/**/TrajectoryPlanner.*
-/**/RealSimPickAndPlace.*
+# /**/SourceDestinationPublisher.*
+# /**/TrajectoryPlanner.*
+# /**/RealSimPickAndPlace.*
 
 
 # MemoryCaptures can get excessive in size.
@@ -78,3 +78,6 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Sensitive Data
+gemini_api_key.txt
