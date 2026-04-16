@@ -21944,7 +21944,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5113255398182140587, guid: 3901759e6233748538fffdbc519c1a68, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.13
+      value: -0.146
       objectReference: {fileID: 0}
     - target: {fileID: 5113255398182140587, guid: 3901759e6233748538fffdbc519c1a68, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -41036,6 +41036,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c268eb14d5c879b4589aefb012e88a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentInputMode: 2
+  geminiApiKey: 
+  geminiPrompt: 'Point to the cube. The label returned should be an identifying name
+    for the object detected. The answer should follow the json format: [{"point":
+    [y, x], "label": "cube"}]. The points are in [y, x] format normalized to 0-1000.'
+  saveGeminiLogs: 1
   m_RosServiceName: niryo_moveit
   m_NiryoOne: {fileID: 1808573332}
   m_Target: {fileID: 977052745}
