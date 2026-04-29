@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "```json\n[\n  {\"point\": [487, 584], \"label\": \"cube\"}\n]\n```",
+            "thoughtSignature": "EosHCogHAQw51seTFSWhPL1+fx1QbAgCLus9EQ/MUo79IYZdX0rvcYrvu1aF5yU69kTdKOKNTTrjHnfGpkI1YiRIg7oqKNhgeq92MSU3JMhppcYV8zRRzw5l+PJ0ejlBXllsne6wbo2DQ5oVx3T+Oj+ftE/vUjt5xYGYqlkkC0234UNtf9gvZaA+a6J/zh0UOP14EjCDbTnfYhDXdjFLFhVPeHk5/YG47sQSYvSp/lBaWNv5aNL+RlHQYnCQfPVLxo+n/SMT4qE5bf2Rtniv8biZvJfO9OLNTAyl7E2GF89o7qS3FrDLnF3qi3Namw8hvP+xAuE2qek2i88AHPN4b3+WxJ4pcM4/n41oX0TpNARIrJG183AT2PuEDtV/eJ1jHeJCKHgxfxvjW5M3j0+llGqnxgJDXMEdjxLImo4AgMzG+i1AXZx7Q15E05kM9PLXTXKi70pKsfUsitS75niAj14p5XXDzJoGcz+387ODvTCHJc16XBuKiewWXeTwlnHV86lvj2hlb14edGQastUQRLb9tKa57s0D7jXDSUfH3u58pVsyvIHQbb/0BsvFTII74yOpi1YbSRwfIPRAZZshaN3C4uwT+RJzqONZcxHo7S/e4nsSXvVZnAN5x5Hg9OwwEYBdWDdFvPdn59T4TQqjwvT7c6++GisJy2YI4d/Y7wRr5K5l6AFEiJnLoOPx3dpYWRSGznPojGGM+EZpgXu6htlLDw2zhwO+i4NYcMmiPKDH3ZR3XZFE23gud8HO2sF9l9L9xrYTQwsol0prgrjchDh87jqa8lrNG0MJOI7V3IIfqZSPGJ3twhL2+nYTd8nB0lcc0FxClvsFzavBnIv60BGWQAgeFA8AHskab2HvZ7B0s2KfjGRPCgI//dNF0nfPxCUTQtZqCUd0ikJhfLcFAMmpWtUxFABc5bvlNukn5f++yWqbOrJXdJQQNJiU86TBSq9EZrNiuv1HIhNDHD3lFSzgiLCd1q9p7m7RoZRM1F4IzIHp5jBKo1v8ivabrK7zaf00VWT9CMGsU71kXvpAZizVT1Azb2X4JF0nxz3U6+RU2A08WRyzep45DJTbI8E3ZqSQu8rPZYJ0UHNJfzy0EvrajFL4NzsM2tqmRJwC9c71/kVgnSN+23yi6pApmdzWJkKDeGh0mZItVWlfhzEtLQek77jOcbWGXxbkQUMkE3n+GbqoA/UGa/mVf7yY1A=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 1119,
+    "candidatesTokenCount": 28,
+    "totalTokenCount": 1417,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 61
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1058
+      }
+    ],
+    "thoughtsTokenCount": 270
+  },
+  "modelVersion": "gemini-robotics-er-1.6-preview",
+  "responseId": "HrrwaaCaA7i1vdIP5fPK8Q4"
+}

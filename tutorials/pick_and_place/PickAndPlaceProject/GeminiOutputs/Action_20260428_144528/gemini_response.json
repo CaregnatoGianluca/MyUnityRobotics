@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "```json\n[\n  {\"point\": [632, 604], \"label\": \"cube\"}\n]\n```",
+            "thoughtSignature": "ErkFCrYFAQw51sdbm6eJlDpmAGdgi+fBuIHBZiZGfbVhuqOQpNRx6iay3znCEzyvKA6cWQawlZKAtiByh8Re8eNgJtneEJMxiC4+QHDIoUyuiLV2RZ1diaZkbWtoOuc3+GokqbqA81PXCSC6wgTRp4W0QBiU99nzGkkNSM0BxNMaQp324a05JGHErO/L+tkW/GE0oyWixYHskH71/E8D8gQltE/uI0DXdL9FExm3DjPnLMGERePj1Zu4Tu6dznQVoK7L0JHum/FS5ZnBskVl1/SwT0XyLsPRJTK+XiAUJt40PckzJgriow7jvZylm94+WqC8zxt94GeXJpphvW9HInCX2RL1hPyov3LWWRJ5qqbfAwi15OYgs0T/bXxBvhnYTSKIYveu4XfVoss6xnJdqPe9WiFAWCpDMGMZRcVGUvcEzS6VQPEDmXMD488iMSUeENHFoP2CAww8vxvvykWCcUcYUYcgQi5U628fYemUobIWoecyio5DZdBsBpmsNzIRhqAgifhEXR4Ec/Iqa/w4/cQfRY64qh4vSWCR1cW0fFS+WbSFKiqYFEIwoZ0muG4vmDptjnXEAVMj4eZVKVcdEloIHdzGrCUrwyR13gjWCdA9WnSfodCN4IjtAUjUkf/fYVMY05jbE0jyHq15B8kRZ52BUpQP1tMO2ezdUEJit5wli8BkAj1gb1tIrDHz5SX7IfzplJh7XZdLIVMV6Ywpl+ZXe2lvK2NICokP56XoRzQbJ0qTQJBZ8FppjEj1vKcsmF2XpQIFC9ekldkPlxPTA8pmLqC15lRSbqLzBTAlYX9Ar1vmFckXud1Yy3Zxo6LWdFOmPKsLSxUO/4XRnvClPoHlJPWQRwxleUKsVNFe4iJxQhyfp1qa0rOgM7Vu4agPHpc9QOcBJPkW+AVh/v9AALO4TMdyo/WJEvfPWw=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 1119,
+    "candidatesTokenCount": 29,
+    "totalTokenCount": 1359,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 61
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1058
+      }
+    ],
+    "thoughtsTokenCount": 211
+  },
+  "modelVersion": "gemini-robotics-er-1.6-preview",
+  "responseId": "8KvwadbWKYLkkdUPvMmEgQU"
+}
