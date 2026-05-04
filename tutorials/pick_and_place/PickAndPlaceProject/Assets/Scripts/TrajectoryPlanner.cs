@@ -68,6 +68,14 @@ public class TrajectoryPlanner : MonoBehaviour
     bool m_WaitingForInput = false;
     Vector3 m_CurrentPickPosition;
 
+    string m_CurrentLogDir = "";
+    float m_GeminiRequestStartTime = 0;
+    float m_GeminiRequestDuration = 0;
+    float m_MoveItStartTime = 0;
+    float m_MoveItDuration = 0;
+    float m_ExecutionStartTime = 0;
+    float m_ExecutionDuration = 0;
+
     void Update()
     {
         if (currentInputMode == InputMode.MouseClick && m_WaitingForInput && Input.GetMouseButtonDown(0))
@@ -175,6 +183,7 @@ public class TrajectoryPlanner : MonoBehaviour
     /// </summary>
     public void PublishJoints()
     {
+        m_MoveItStartTime = Time.realtimeSinceStartup;
         var request = new MoverServiceRequest();
         request.joints_input = CurrentJointConfig();
 
@@ -199,6 +208,8 @@ public class TrajectoryPlanner : MonoBehaviour
 
     void TrajectoryResponse(MoverServiceResponse response)
     {
+        m_MoveItDuration = Time.realtimeSinceStartup - m_MoveItStartTime;
+
         if (response.trajectories.Length > 0)
         {
             Debug.Log("Trajectory returned.");
@@ -208,6 +219,9 @@ public class TrajectoryPlanner : MonoBehaviour
         {
             Debug.LogWarning("No trajectory returned from MoverService. The pose might possess impossible rotational constraints! Randomizing both Cube and Placement zone for a fresh start.");
             
+            m_ExecutionDuration = 0;
+            SaveTelemetryData(true, "MoveIt failed to find a valid trajectory path.");
+
             // Randomize Drop-Off
             m_TargetPlacement.transform.position = GetRandomPosition();
             
@@ -250,6 +264,7 @@ public class TrajectoryPlanner : MonoBehaviour
     /// <returns></returns>
     IEnumerator ExecuteTrajectories(MoverServiceResponse response)
     {
+        m_ExecutionStartTime = Time.realtimeSinceStartup;
         if (response.trajectories != null)
         {
             // For every trajectory plan returned
@@ -293,6 +308,8 @@ public class TrajectoryPlanner : MonoBehaviour
             if (targetPlacementComponent != null && targetPlacementComponent.CurrentState != Unity.Robotics.PickAndPlace.TargetPlacement.PlacementState.InsidePlaced)
             {
                 Debug.LogWarning("Pick and place sequence finished, but the cube isn't in the zone. Retrying...");
+                m_ExecutionDuration = Time.realtimeSinceStartup - m_ExecutionStartTime;
+                SaveTelemetryData(true, "Cube missed the placement zone physics trigger.");
                 if (currentInputMode == InputMode.MouseClick)
                 {
                     m_WaitingForInput = true;
@@ -320,6 +337,8 @@ public class TrajectoryPlanner : MonoBehaviour
 
     void OnTargetPlaced()
     {
+        m_ExecutionDuration = Time.realtimeSinceStartup - m_ExecutionStartTime;
+        SaveTelemetryData(false, "");
         StartCoroutine(RestartRoutine());
     }
 
@@ -357,6 +376,11 @@ public class TrajectoryPlanner : MonoBehaviour
 
     IEnumerator PerformGeminiVisionRequest()
     {
+        m_GeminiRequestStartTime = Time.realtimeSinceStartup;
+        m_GeminiRequestDuration = 0;
+        m_MoveItDuration = 0;
+        m_ExecutionDuration = 0;
+
         string keyPath = System.IO.Path.Combine(Application.dataPath, "../gemini_api_key.txt");
         if (System.IO.File.Exists(keyPath))
         {
@@ -385,15 +409,16 @@ public class TrajectoryPlanner : MonoBehaviour
         byte[] imageBytes = screenShot.EncodeToPNG();
         string base64Image = System.Convert.ToBase64String(imageBytes);
 
-        string logDir = string.Empty;
+        m_CurrentLogDir = string.Empty;
         if (saveGeminiLogs)
         {
-            logDir = System.IO.Path.Combine(Application.dataPath, "../GeminiOutputs/Action_" + DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-            System.IO.Directory.CreateDirectory(logDir);
-            System.IO.File.WriteAllBytes(System.IO.Path.Combine(logDir, "raw_frame.png"), imageBytes);
+            m_CurrentLogDir = System.IO.Path.Combine(Application.dataPath, "../GeminiOutputs/Action_" + DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+            System.IO.Directory.CreateDirectory(m_CurrentLogDir);
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(m_CurrentLogDir, "raw_frame.png"), imageBytes);
         }
 
-        string jsonPayload = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + geminiPrompt.Replace("\"", "\\\"").Replace("\n", " ") + "\" }, { \"inline_data\": { \"mime_type\": \"image/png\", \"data\": \"" + base64Image + "\" } } ] } ], \"generationConfig\": { \"temperature\": 1.0 } }";
+        string schemaStr = "\"responseMimeType\": \"application/json\", \"responseJsonSchema\": { \"type\": \"array\", \"items\": { \"type\": \"object\", \"properties\": { \"point\": { \"type\": \"array\", \"items\": { \"type\": \"integer\" } }, \"label\": { \"type\": \"string\" } }, \"required\": [\"point\", \"label\"] } }";
+        string jsonPayload = "{ \"contents\": [ { \"parts\": [ { \"text\": \"" + geminiPrompt.Replace("\"", "\\\"").Replace("\n", " ") + "\" }, { \"inline_data\": { \"mime_type\": \"image/png\", \"data\": \"" + base64Image + "\" } } ] } ], \"generationConfig\": { \"temperature\": 1.0, " + schemaStr + " } }";
         string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-robotics-er-1.6-preview:generateContent?key=" + geminiApiKey;
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
@@ -406,9 +431,12 @@ public class TrajectoryPlanner : MonoBehaviour
             Debug.Log("Sending request to Gemini Robotics API...");
             yield return request.SendWebRequest();
 
+            m_GeminiRequestDuration = Time.realtimeSinceStartup - m_GeminiRequestStartTime;
+
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Gemini API Error: " + request.error + " | " + request.downloadHandler.text);
+                SaveTelemetryData(true, "Gemini API Error: " + request.error);
                 if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
             }
             else
@@ -416,9 +444,9 @@ public class TrajectoryPlanner : MonoBehaviour
                 string responseText = request.downloadHandler.text;
                 Debug.Log("Gemini Response: " + responseText);
 
-                if (saveGeminiLogs && !string.IsNullOrEmpty(logDir))
+                if (saveGeminiLogs && !string.IsNullOrEmpty(m_CurrentLogDir))
                 {
-                    System.IO.File.WriteAllText(System.IO.Path.Combine(logDir, "gemini_response.json"), responseText);
+                    System.IO.File.WriteAllText(System.IO.Path.Combine(m_CurrentLogDir, "gemini_response.json"), responseText);
                 }
 
                 Match match = Regex.Match(responseText, @"point.*?\[\s*(\d+)\s*,\s*(\d+)\s*\]");
@@ -430,7 +458,7 @@ public class TrajectoryPlanner : MonoBehaviour
                     float screenX = cam.pixelWidth * (xNorm / 1000f);
                     float screenY = cam.pixelHeight * (1f - (yNorm / 1000f)); 
 
-                    if (saveGeminiLogs && !string.IsNullOrEmpty(logDir))
+                    if (saveGeminiLogs && !string.IsNullOrEmpty(m_CurrentLogDir))
                     {
                         int px = (int)screenX;
                         int py = (int)screenY;
@@ -445,7 +473,7 @@ public class TrajectoryPlanner : MonoBehaviour
                             }
                         }
                         screenShot.Apply();
-                        System.IO.File.WriteAllBytes(System.IO.Path.Combine(logDir, "labeled_frame.png"), screenShot.EncodeToPNG());
+                        System.IO.File.WriteAllBytes(System.IO.Path.Combine(m_CurrentLogDir, "labeled_frame.png"), screenShot.EncodeToPNG());
                     }
 
                     Ray ray = cam.ScreenPointToRay(new Vector3(screenX, screenY, 0));
@@ -459,16 +487,35 @@ public class TrajectoryPlanner : MonoBehaviour
                     else 
                     {
                         Debug.LogError("Raycast from Gemini point did not hit table.");
+                        SaveTelemetryData(true, "Raycast from Gemini point did not hit table physics plane.");
                         if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
                     }
                 }
                 else
                 {
                     Debug.LogError("Could not parse point from Gemini response.");
+                    SaveTelemetryData(true, "Could not parse coordinate regex from Gemini response.");
                     if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
                 }
             }
         }
+    }
+
+    void SaveTelemetryData(bool failed, string reason)
+    {
+        if (!saveGeminiLogs || string.IsNullOrEmpty(m_CurrentLogDir) || currentInputMode != InputMode.GeminiVision) return;
+
+        string telemetry = "{\n";
+        telemetry += $"  \"gemini_request_seconds\": {m_GeminiRequestDuration.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)},\n";
+        telemetry += $"  \"moveit_planning_seconds\": {m_MoveItDuration.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)},\n";
+        telemetry += $"  \"robot_execution_seconds\": {m_ExecutionDuration.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)},\n";
+        float total = m_GeminiRequestDuration + m_MoveItDuration + m_ExecutionDuration;
+        telemetry += $"  \"total_action_seconds\": {total.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)},\n";
+        telemetry += $"  \"status\": \"{(failed ? "FAILED" : "SUCCESS")}\"";
+        if (failed) telemetry += $",\n  \"error_reason\": \"{reason}\"";
+        telemetry += "\n}";
+
+        System.IO.File.WriteAllText(System.IO.Path.Combine(m_CurrentLogDir, "telemetry.json"), telemetry);
     }
 
     Vector3 GetRandomPosition()

@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "[{\"point\": [712, 527], \"label\": \"cube\"}]",
+            "thoughtSignature": "Ep0ICpoIAQw51sc5xVL+GwESxtMZgc1dNwYI9eZU2/n74kWeo0Kr2omXOA6Iez0weEwqlSez1/AEW6ig9CVbhYUdXnKX3pVS09WKlIc0q1pRP8Qs9BXAxmXhiTMLkS6xGb7kEQiLb53tHjtMu6d2kiIS0yf9ESzARyP5rxtwC3LdrpJq+YEnoamhzjg7g9G318u9HNJwRjJvg6RSgpqqobMj24XFe//0GgetUs9anH/caEP7mwXgiKnZA2HGRgCGpOzpfe1o06ncZ0kRqdXbqYfGXtsgusxV6jv2qbh6rgHiKoL4Fidh0zF+BCIQbW3wF0dL943aVkXGdvB0ARnxqUc5n/az2WOusowtcMRUaeNjbqUUkfPE4XJT5+3lRpuOBFvoimt+LZCwxGMP4Cf7u5GqdsRjEsiKRuqvzDf+N2zjBX4M6oC7Vqvk1zf7FJnBiviJ5NDiTCOidDKJzwMpzVrhjiaeHG1qSrw+vlsZL01WudtpwZgWjkoo4nYJBFUrH/uBVbmgfSacxCGPHDdfBA9CUFiey2otIFYloe6QUg0//538t5GdYeSuN9ZVbXfOX/aVxzsShrhdtjpbWscBh+vtRNrDa5uw13CXHjuKQd1impiiMuYzy24fQa4RYxzdl2viaCDbyvpuZwrdkD+X2JEvfap2FDb4cMv/zbnj9Nw15cKLesFoTDxZ0tppdNoBZyUrpY8YVHFmL/vpos7WBMDyBZBFABdeFE5fez5QXy4uPrRlTf7JB1V6lcX20rMCGSeNgZ6QviG5CNFVt19vTUqC8LgVuc0DPtlDs7iigeW/OQafWzfnq1ZgXbmSXLNPWKw+DVM9Je+siHEJMTEm9fOygRY6vEjQK28q0w6I4vBgnUf6gYO4RAP8fARmwZ9lWGgtgET9qTBri3UfdexanOLXDLv8/wVPyMQNm+jTg+15Ibf/iD1aUygNNLll562sDmgk2k+BtM57bO0f6cp8N7E/2Vj1A+FWfKAeqm2kJpu1I35C/PH97iZ5nZZS2h6sFJTzOd8fHF4iqDpMb8+dN6eV1l37hILzyqLc6/P1KIGbACSdJHNh5ruamKvkIgSLjjvw7nRcPmXdNc85iZlJ0lhYVphP23qamlWLY7OJY+vk8IDOH1bNvwqxNxIeKri2xR6C9wEVVJsSfdXzna9sR5Bd+IxBTaxtwmYMNszdznAAraaodaxSwyqydiyQhzmKSfKSnSQ2zFDv5rmxxN6EpUNpPp0F1Xufzts6HicjhYGbliGdASqBVuWQC8aqId5hn3XRnXTxJXNMO/C3b9pYArHjVP0r8jJaK5TLb8sIJDPN03mcMcwNLyakp6PTkQb+LU7TPoStriOoEtLzkU+xtOuQuItkw/pmqOU/hL+GbW4N/7W5324OdvFYW1G3y85I"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 1141,
+    "candidatesTokenCount": 21,
+    "totalTokenCount": 1536,
+    "promptTokensDetails": [
+      {
+        "modality": "IMAGE",
+        "tokenCount": 1080
+      },
+      {
+        "modality": "TEXT",
+        "tokenCount": 61
+      }
+    ],
+    "thoughtsTokenCount": 374
+  },
+  "modelVersion": "gemini-robotics-er-1.6-preview",
+  "responseId": "g8vxad60Ht3WxN8PgsXZiQM"
+}

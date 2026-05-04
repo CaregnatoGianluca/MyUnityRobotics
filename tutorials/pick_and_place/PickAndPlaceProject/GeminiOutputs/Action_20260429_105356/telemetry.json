@@ -1,0 +1,7 @@
+{
+  "gemini_request_seconds": 5.172,
+  "moveit_planning_seconds": 1.404,
+  "robot_execution_seconds": 11.732,
+  "total_action_seconds": 18.308,
+  "status": "SUCCESS"
+}

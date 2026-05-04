@@ -1,0 +1,8 @@
+{
+  "gemini_request_seconds": 4.424,
+  "moveit_planning_seconds": 1.505,
+  "robot_execution_seconds": 5.436,
+  "total_action_seconds": 11.365,
+  "status": "FAILED",
+  "error_reason": "Cube missed the placement zone physics trigger."
+}
