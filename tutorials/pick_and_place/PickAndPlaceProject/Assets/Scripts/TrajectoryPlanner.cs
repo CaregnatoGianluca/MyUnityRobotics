@@ -11,6 +11,12 @@ using UnityEngine;
 
 public class TrajectoryPlanner : MonoBehaviour
 {
+    /// <summary>
+    /// Defines the state machine for how the system selects a target coordinate.
+    /// - RandomAutomated: The system infinitely picks and places random coordinates to generate VLA datasets.
+    /// - MouseClick: The user manually clicks the screen to define the target coordinate.
+    /// - GeminiVision: The VLM acts as the orchestrator, determining the coordinates via camera feed.
+    /// </summary>
     public enum InputMode
     {
         RandomAutomated,
@@ -65,8 +71,8 @@ public class TrajectoryPlanner : MonoBehaviour
     // ROS Connector
     ROSConnection m_Ros;
 
-    bool m_WaitingForInput = false;
-    Vector3 m_CurrentPickPosition;
+    public bool m_WaitingForInput = false;
+    public Vector3 CurrentPickPosition;
 
     string m_CurrentLogDir = "";
     float m_GeminiRequestStartTime = 0;
@@ -78,6 +84,8 @@ public class TrajectoryPlanner : MonoBehaviour
 
     void Update()
     {
+        // If we are in manual mode and waiting for input, project a physical Raycast from the camera
+        // to mathematically intersect with the virtual 3D table plane.
         if (currentInputMode == InputMode.MouseClick && m_WaitingForInput && Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -85,16 +93,16 @@ public class TrajectoryPlanner : MonoBehaviour
 
             if (tablePlane.Raycast(ray, out float distance))
             {
-                m_CurrentPickPosition = ray.GetPoint(distance);
+                CurrentPickPosition = ray.GetPoint(distance);
                 m_WaitingForInput = false;
-                PublishJoints();
+                PublishJoints(); // Trigger the ROS planning sequence
             }
         }
     }
 
     /// <summary>
-    ///     Find all robot joints in Awake() and add them to the jointArticulationBodies array.
-    ///     Find left and right finger joints and assign them to their respective articulation body objects.
+    /// Initializes the ROS connection and dynamically binds the Unity ArticulationBodies 
+    /// (the physics-driven robotic joints) to their corresponding ROS topics.
     /// </summary>
     void Start()
     {
@@ -124,7 +132,7 @@ public class TrajectoryPlanner : MonoBehaviour
             targetPlacementComponent.OnTargetPlaced += OnTargetPlaced;
         }
 
-        m_CurrentPickPosition = m_Target.transform.position;
+        CurrentPickPosition = m_Target.transform.position;
         if (currentInputMode == InputMode.MouseClick) m_WaitingForInput = true;
         else if (currentInputMode == InputMode.GeminiVision) StartCoroutine(PerformGeminiVisionRequest());
     }
@@ -176,10 +184,9 @@ public class TrajectoryPlanner : MonoBehaviour
     }
 
     /// <summary>
-    ///     Create a new MoverServiceRequest with the current values of the robot's joint angles,
-    ///     the target cube's current position and rotation, and the targetPlacement position and rotation.
-    ///     Call the MoverService using the ROSConnection and if a trajectory is successfully planned,
-    ///     execute the trajectories in a coroutine.
+    /// Packages the current joint states, the calculated Pick Pose, and the target Place Pose 
+    /// into a standardized ROS Message (MoverServiceRequest). It sends this request to the 
+    /// external MoveIt backend running in Linux/Docker.
     /// </summary>
     public void PublishJoints()
     {
@@ -190,7 +197,7 @@ public class TrajectoryPlanner : MonoBehaviour
         // Pick Pose
         request.pick_pose = new PoseMsg
         {
-            position = (m_CurrentPickPosition + m_PickPoseOffset).To<FLU>(),
+            position = (CurrentPickPosition + m_PickPoseOffset).To<FLU>(),
 
             // The hardcoded x/z angles assure that the gripper is always positioned above the target cube before grasping.
             orientation = Quaternion.Euler(90, m_Target.transform.eulerAngles.y, 0).To<FLU>()
@@ -206,13 +213,16 @@ public class TrajectoryPlanner : MonoBehaviour
         m_Ros.SendServiceMessage<MoverServiceResponse>(m_RosServiceName, request, TrajectoryResponse);
     }
 
+    /// <summary>
+    /// Callback triggered asynchronously when the Linux ROS/MoveIt backend finishes calculating the inverse kinematics.
+    /// </summary>
     void TrajectoryResponse(MoverServiceResponse response)
     {
         m_MoveItDuration = Time.realtimeSinceStartup - m_MoveItStartTime;
 
         if (response.trajectories.Length > 0)
         {
-            Debug.Log("Trajectory returned.");
+            Debug.Log("Trajectory returned. Valid path found by MoveIt.");
             StartCoroutine(ExecuteTrajectories(response));
         }
         else
@@ -241,7 +251,7 @@ public class TrajectoryPlanner : MonoBehaviour
             }
             else if (currentInputMode == InputMode.RandomAutomated)
             {
-                m_CurrentPickPosition = m_Target.transform.position;
+                CurrentPickPosition = m_Target.transform.position;
                 PublishJoints();
             }
             else if (currentInputMode == InputMode.GeminiVision)
@@ -252,16 +262,10 @@ public class TrajectoryPlanner : MonoBehaviour
     }
 
     /// <summary>
-    ///     Execute the returned trajectories from the MoverService.
-    ///     The expectation is that the MoverService will return four trajectory plans,
-    ///     PreGrasp, Grasp, PickUp, and Place,
-    ///     where each plan is an array of robot poses. A robot pose is the joint angle values
-    ///     of the six robot joints.
-    ///     Executing a single trajectory will iterate through every robot pose in the array while updating the
-    ///     joint values on the robot.
+    /// Translates the mathematical array of waypoints returned by MoveIt into physical motor torques 
+    /// applied to the Unity ArticulationBodies.
+    /// The trajectory contains 4 stages: PreGrasp, Grasp, PickUp, and Place.
     /// </summary>
-    /// <param name="response"> MoverServiceResponse received from niryo_moveit mover service running in ROS</param>
-    /// <returns></returns>
     IEnumerator ExecuteTrajectories(MoverServiceResponse response)
     {
         m_ExecutionStartTime = Time.realtimeSinceStartup;
@@ -316,7 +320,7 @@ public class TrajectoryPlanner : MonoBehaviour
                 }
                 else if (currentInputMode == InputMode.RandomAutomated)
                 {
-                    m_CurrentPickPosition = m_Target.transform.position;
+                    CurrentPickPosition = m_Target.transform.position;
                     PublishJoints();
                 }
                 else if (currentInputMode == InputMode.GeminiVision)
@@ -335,13 +339,20 @@ public class TrajectoryPlanner : MonoBehaviour
         Place
     }
 
+    /// <summary>
+    /// Event triggered by TargetPlacement.cs when the cube successfully settles in the goal box.
+    /// </summary>
     void OnTargetPlaced()
     {
         m_ExecutionDuration = Time.realtimeSinceStartup - m_ExecutionStartTime;
         SaveTelemetryData(false, "");
-        StartCoroutine(RestartRoutine());
+        StartCoroutine(RestartRoutine()); // Triggers Domain Randomization for next loop
     }
 
+    /// <summary>
+    /// Domain Randomization Engine: Automatically randomizes the 3D position of both the Cube 
+    /// and the Target Placement Zone.
+    /// </summary>
     IEnumerator RestartRoutine()
     {
         yield return new WaitForSeconds(m_RestartDelay);
@@ -365,7 +376,7 @@ public class TrajectoryPlanner : MonoBehaviour
         }
         else if (currentInputMode == InputMode.RandomAutomated)
         {
-            m_CurrentPickPosition = m_Target.transform.position;
+            CurrentPickPosition = m_Target.transform.position;
             PublishJoints();
         }
         else if (currentInputMode == InputMode.GeminiVision)
@@ -481,7 +492,7 @@ public class TrajectoryPlanner : MonoBehaviour
 
                     if (tablePlane.Raycast(ray, out float distance))
                     {
-                        m_CurrentPickPosition = ray.GetPoint(distance);
+                        CurrentPickPosition = ray.GetPoint(distance);
                         PublishJoints();
                     }
                     else 

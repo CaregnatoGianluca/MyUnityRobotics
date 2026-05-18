@@ -1,0 +1,361 @@
+\documentclass[a4paper, 12pt, twoside, openright]{book}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[style=ieee]{biblatex}
+\addbibresource{thesis.bib} 
+
+
+\raggedbottom 
+
+%------------------------------ colors
+\usepackage[usenames,dvipsnames,table]{xcolor} % use colors on table and more
+\definecolor{333}{RGB}{51, 51, 51} % define custom color
+%------------------------------ source code
+\usepackage{listings}
+\lstset{
+  basicstyle=\footnotesize\sffamily,
+  commentstyle=\itshape\color{gray},
+  captionpos=b,
+  frame=shadowbox,
+  language=HTML,
+  rulesepcolor=\color{333},
+  tabsize=2
+}
+%------------------------------ define Abstract environment, missing in the 'book' class
+\newenvironment{abstract}{\cleardoublepage \null \vfill \begin{center}\bfseries\abstractname \end{center}}{\vfill\null}
+\addto\captionsenglish{\renewcommand*\abstractname{Abstract}} % change Abstract title
+%------------------------------ active url
+\usepackage{url}
+\renewcommand{\UrlFont}{\color{black}\small\ttfamily}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref} % active ref
+%------------------------------ macros
+\newcommand{\sectionname}{Section} % define Section ref
+\newcommand{\subsectionname}{Sub-section} % define Sub-section ref
+\renewcommand*\arraystretch{1.4} % tables padding
+
+
+\begin{document}
+\frontmatter
+\begin{titlepage}
+	%immagini di intestazione
+	\begin{flushleft}
+		\includegraphics[width=0.3\columnwidth]{images/logo_unipd.png}
+		\hspace{\fill}
+		\includegraphics[width=0.05\columnwidth]{images/logo_DEI.png}
+		\hspace{0.01 cm}
+		\begin{minipage}[b][1,8 cm][c]{0.3\columnwidth}
+			\textsf{{\color{Sepia}{DEPARTMENT\\OF INFORMATION\\ENGINEERING}}}
+		\end{minipage}
+	\end{flushleft}
+	
+	%titoli vari
+	\vfill
+	\begin{center}
+		\begin{large}
+			DEPARTMENT OF INFORMATION ENGINEERING
+			\\~\\
+			DEGREE PROGRAM IN COMPUTER ENGINEERING \\ (AI \& Robotics)
+			\\~\\~\\
+			TITLE
+			\vfill
+			Supervisors:
+			\hfill
+			Candidate:
+			\\
+			Prof. Stefano Ghidoni
+			\hfill
+			Gianluca Caregnato
+			\\
+			Prof. Roger Olsson
+            \hfill ~
+			\vfill
+			ACADEMIC YEAR: 2025/2026
+			\\
+			Graduation date: 
+			\vfill
+		\end{large}
+	\end{center}
+	
+\end{titlepage}
+
+
+\cleardoublepage % make left page blank
+\thispagestyle{empty} %------------------------------ DEDICA
+
+\null
+\vspace{2cm}
+\begin{flushright}
+To...
+\end{flushright}
+\vfill
+
+\begin{quote}
+  Quote
+
+  \textit{Gianluca Caregnato}
+\end{quote}
+\vfill
+\null
+
+
+\begingroup %------------------------------ CONTENTS
+  \makeatletter
+  \let\ps@plain\ps@empty
+  \makeatother
+  \tableofcontents
+  \clearpage
+\endgroup
+
+
+\begin{abstract} %------------------------------ ABSTRACT
+\markboth{}{} % remove header
+\thispagestyle{empty}
+...
+\end{abstract}
+
+
+\mainmatter\doublespace 
+
+\chapter{Introduction} %------------------------------ INTRODUCTION
+\thispagestyle{empty}
+
+\section{Background and Motivation}
+
+Traditionally, industrial robotics has been defined by deterministic, highly structured environments. Manipulators on factory floors execute pre-programmed, millimeter-perfect trajectories governed by rigid control logic, relying on absolute environmental predictability to function safely. 
+
+While this paradigm excels in high-volume, repetitive manufacturing, it fundamentally lacks the flexibility to adapt to dynamic, unstructured tasks. Today, the primary objective of modern robotics research is to shatter this limitation, driving a fundamental paradigm shift from rigid automation to true autonomy.
+
+This transition is uniquely possible right now due to the explosive, unprecedented evolution of Artificial Intelligence. As neural networks and foundation models advance at breakneck speed, we finally possess the computational power to give these legacy machines cognitive perception.
+
+However, applying these digital breakthroughs to factory hardware introduces a complex new layer of engineering. As we will see, there is a vast and critical difference between standard artificial intelligence and the specialized, embodied AI required to safely manipulate the physical world.
+
+
+
+
+\section{The Evolution of Embodied Autonomy}
+Achieving physical autonomy requires more than just raw computational power. It requires building a complete artificial nervous system. The genesis of this system was the Large Language Model (LLM). While LLMs unlocked unprecedented logical reasoning, they remained trapped in text. To operate beyond a digital screen, the system needed the ability to perceive 3D space.
+
+This limitation was shattered by Vision-Language Models (VLMs), which bridged the gap between semantic logic and visual perception. VLMs allowed machines to perceive unpredictable, real-world environments, extracting meaningful spatial data from live camera feeds. Even with this visual awareness, a fundamental barrier remained: translating that visual context into the physical world requires commanding industrial motors.
+
+To cross this final threshold, recent literature has proposed Vision-Language-Action (VLA) models. Unlike their predecessors, VLAs are engineered to map multimodal inputs directly to low-level kinematic outputs. They do not exclusively generate a bounding box or a text description; they output continuous, high-frequency motor commands. By translating unstructured RGB camera data and semantic prompts into precise joint trajectories, VLAs transform the AI from a passive observer into an active physical agent.
+
+Rather than overloading a single system, the current state-of-the-art relies on a Hierarchical Orchestrator-Actor framework. This architecture intentionally decouples cognitive load from kinematic execution. A high-parameter VLM serves as the "Brain", processing the visual environment to formulate a strategic plan. It outputs target coordinates to a secondary, localized VLA. Functioning as the "Muscle", this VLA operates at a high frequency, translating those coordinates into the real-time, continuous motor torques required for physical autonomy.
+
+\begin{figure} [htbp]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/AutomationAutonomy.jpeg}
+    \caption{From Fixed Paths to Goal-Driven Decisions}
+    \label{fig:AutomationAutonomy}
+\end{figure}
+
+\section{Proposed Methodology}
+
+\section{Research Objectives}
+
+\section{Scope and Limitations}
+
+\section{The Socio-Economic Impact}
+
+\section{Thesis Outline}
+
+\chapter{State of the Art and Related Works} %---------------------- CHAPTER 2
+\thispagestyle{empty}
+
+\section{Introduction}
+
+True robotic autonomy cannot be achieved within a single scientific discipline. It requires the convergence of deep learning, spatial mathematics, and traditional industrial control theory. This chapter provides a comprehensive review of the current literature across these domains, establishing the theoretical foundation required to deploy embodied artificial intelligence onto legacy hardware.
+
+The review begins by tracing the rapid evolution of semantic neural networks into Vision-Language-Action (VLA) architectures, highlighting the necessity of separating high-level cognitive reasoning from low-level kinematic control. It then examines the mathematical bridges necessary for spatial perception, specifically camera calibration and pose estimation. Finally, this chapter analyzes the current engineering bottlenecks, including Sim-to-Real transfer limitations, middleware overhead, and the strict deterministic constraints of proprietary industrial controllers. By mapping this technological landscape, this review identifies the critical research gap that this thesis aims to resolve
+
+\section{The Evolution of Vision-Language Models}
+
+The application of foundation models to physical robotics represents a profound paradigm shift. Historically, integrating artificial intelligence into robotics required highly specialized, single-purpose algorithms. Achieving generalized autonomy, however, required the development of systems capable of both high-level semantic reasoning and low-level spatial awareness.
+
+\subsection{The Unification of Vision and Language}
+
+The roadmap to robotic autonomy began by shattering the barrier between pixels and words. For decades, computer vision relied on rigid, task-specific networks that were fundamentally disconnected from linguistic reasoning. The introduction of the Vision Transformer (ViT) \cite{dosovitskiy2020image} unified the underlying processing architecture, but true multimodal intelligence was catalyzed by models like CLIP \cite{radford2021learning} and ALIGN \cite{jia2021scaling}. 
+
+These models used a technique called contrastive learning to build a direct mathematical bridge between words and images. Instead of treating text and pictures as separate types of data, they translated both into a shared format. This breakthrough allowed artificial intelligence to interpret an unpredictable environment using natural language prompts, providing the essential visual awareness needed for physical robotic tasks.
+
+\subsection{Transitioning from Digital Reasoning to Physical Constraints}
+
+While visual alignment gave artificial intelligence its eyes, it did not grant physical competence. Early research proved that when large foundation models act as zero-shot planners \cite{huang2022language}, they generate brilliant high-level strategies but fail to execute them safely. Because these models operate in a digital vacuum, they frequently hallucinate commands that violate gravity, friction, or strict hardware limits.
+
+The definitive solution to this Grounding Problem was formalized by the SayCan architecture \cite{ahn2022can}. SayCan proved that semantic logic is useless without physical context. It introduced a mathematical filter, requiring the AI to cross-reference its desired action with the actual affordances of the robot (see Figure \ref{fig:saycan}).
+
+Building upon this requirement, researchers realized that physical grounding requires both strict output formats and continuous feedback. Frameworks like Inner Monologue \cite{huang2022inner} demonstrated that an AI must ingest real-time environmental feedback to correct its own physical mistakes. Concurrently, the Code as Policies paradigm \cite{liang2023code} proved that forcing an AI to output executable Python code inherently grounds the system. By restricting the AI to a predefined set of robotic APIs, any attempt to hallucinate an invalid function results in an immediate runtime error, while physically impossible commands are safely caught by the hardware's underlying controllers.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/saycan.png}
+    \caption{A visual representation of the SayCan architecture, demonstrating how the language model's task-grounding probabilities (Say) intersect with the robot's physical affordance probabilities (Can) \cite{ahn2022can}.}
+    \label{fig:saycan}
+\end{figure}
+
+\subsection{From Static Images to Continuous Sensor Streams}
+
+To operate dynamically, a robot must continuously monitor its environment. Static planning falls apart the moment a physical object shifts. The industry addressed this by advancing models capable of processing interleaved video sequences, pioneered by the Flamingo architecture \cite{alaybac2022flamingo}. By maintaining a continuous visual memory, the system could finally perceive motion and temporal changes.
+
+However, building massive neural networks capable of processing complex visual streams created an enormous computational bottleneck. To make advanced visual reasoning accessible, researchers developed optimized frameworks like BLIP-2 \cite{li2023blip}. By freezing the heavy, pre-trained image and language encoders and only training a lightweight query bridge, BLIP-2 proved that state-of-the-art multimodal perception could be achieved without the prohibitive cost of training an entire system from scratch.
+
+With the computational barrier lowered, the paradigm shifted toward complete physical integration. The PaLM-E model \cite{driess2023palm} achieved this by treating continuous robotic telemetry just like words or pixels. By feeding raw sensor readings and live camera feeds directly into the language model, PaLM-E successfully closed the perception loop, granting the AI the real-time awareness necessary to adjust its own physical actions (see Figure \ref{fig:palme}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/pamle.png}
+    \caption{An overview of the PaLM-E architecture, demonstrating how continuous robotic telemetry, images, and text are jointly processed as multimodal sentences. Reproduced from \cite{driess2023palm}.}
+    \label{fig:palme}
+\end{figure}
+
+\subsection{The Paradigm Shift to Native Multimodality}
+
+Moving artificial intelligence into physical robots revealed a major problem with early Vision-Language Models. Older systems, such as BLIP-2, relied on modular, disjointed architectures. One part of the AI would look at the image, and a separate middle layer would mathematically translate those visual features into a format the language model could process. This translation step creates a computational bottleneck and causes the AI to lose small but important visual details along the way.
+
+To fix this delay, the industry moved toward "early-fusion" models, which are also known as natively multimodal architectures. In these new systems, visual data is treated just as importantly as text from the very beginning \cite{huang2023language}. Instead of using separate parts for reading and seeing, early-fusion models turn text, images, and sensor data into one shared language right away. Models like Fuyu-8B took this idea to the limit. They completely removed the separate vision part, proving that raw images can be fed directly into the language model \cite{bavishi2023fuyu}.
+
+Recent research clearly proves that this unified approach is better. For example, the Chameleon architecture \cite{chameleon2024team} showed that early-fusion models perform much better at complex spatial tasks than stitched models. Furthermore, training one single network to handle everything at once greatly reduces response time. Fast response times are absolutely required for real-world robotics. We can see this speed in newer natively unified models like GPT-4o \cite{openai2024gpt4o}.
+
+The Gemini base architecture represents the peak of this natively multimodal design \cite{gemini2023team}. Because Gemini was trained on text, images, and video all at the same time from the start, it naturally understands 3D space without needing a slow translation step. This makes it the perfect "brain" for a robotic system. It can instantly look at a messy physical workspace and immediately turn what it sees into direct, actionable commands.
+
+
+\subsection{Translating Perception to Geometry}
+
+The final evolution in the artificial intelligence timeline is the development of models specifically engineered for physical geometry. While standard early-fusion networks can process images and text very quickly, they are mostly designed for digital conversations. To successfully control a physical robot, the "brain" of the system must be able to translate its visual understanding into precise spatial targets. This specific requirement defines the Gemini Embodied Reasoning (Gemini-ER) architecture (see Figure \ref{fig:gr15_arch}) \cite{geminirobotics2025}. Unlike a standard chatbot, Gemini-ER is explicitly trained to understand geometric constraints and output structured spatial data.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/GR15.jpeg}
+    \caption{An overview of the Gemini Robotics-ER 1.5 architecture, illustrating the flow from multimodal inputs (speech, text, images) to structured spatial outputs \cite{geminirobotics2025}.}
+    \label{fig:gr15_arch}
+\end{figure}
+
+The effectiveness of this specialized spatial training has been strictly confirmed by external research. Independent evaluations, such as the Butter-Bench practical intelligence tests \cite{butterbench2025}, demonstrate that true spatial reasoning remains one of the most difficult challenges for foundational models, with many systems failing at basic environmental awareness. However, these benchmarks recognized the Gemini Robotics-ER 1.5 architecture as a leading solution for understanding complex physical workspaces and successfully calculating relationships between physical objects (see Figure \ref{fig:butterbench}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/GR15performance.png}
+    \caption{Performance comparison of various foundational models on practical intelligence tasks, highlighting the strong embodied reasoning and generality capabilities of the Gemini Robotics-ER 1.5 architecture compared to alternative models \cite{butterbench2025}.}
+    \label{fig:butterbench}
+\end{figure}
+
+Building upon this validated foundation, recent advancements have pushed these capabilities to the absolute state of the art. The newly released Gemini-ER 1.6 framework (see Figure \ref{fig:gr16_perf}) \cite{geminier162026} significantly enhances this geometric precision. When this updated model looks at a messy, unstructured physical environment, it can natively output exact 2D pixel coordinates or targeted bounding boxes based entirely on natural language commands.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/GR16Performance.png}
+    \caption{A performance comparison demonstrating the improved success rates of the Gemini Robotics-ER 1.6 framework relative to previous models \cite{geminier162026}.}
+    \label{fig:gr16_perf}
+\end{figure}
+
+This ability to instantly generate precise spatial coordinates is critical for an orchestrator-actor robotic pipeline. It allows the Gemini system to act as a brilliant observer that processes a complex scene, calculates the winning strategy, and outputs the exact mathematical targets that the lower-level robot controller needs to execute the physical move.
+
+
+\section{Vision-Language-Action (VLA) Architectures}%---------- SECTION 2.3
+
+The architecture of a Vision-Language Model (VLM) is fundamentally limited to perception. While systems like Gemini-ER can perfectly analyze a visual scene and calculate 2D spatial targets, they do not natively understand the physical torque required to move a mechanical arm to that target. To bridge the gap between digital perception and physical execution, the industry developed Vision-Language-Action (VLA) architectures.
+
+A VLA model attempts to collapse the entire robotic pipeline into a single neural network. The foundational breakthrough for this approach was the RT-1 architecture \cite{brohan2022rt}. This paper proved that physical kinematic data could be tokenized. Instead of only predicting the next word in a sentence, the neural network was trained to predict the next physical action of a robot (see Figure \ref{fig:rt1}). By adding physical commands (such as joint displacement and gripper rotation) into the language model's mathematical vocabulary, researchers created a single system capable of processing an image and directly outputting low-level motor control commands.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/RT1.png}
+    \caption{The RT-1 Vision-Language-Action architecture. The model takes a sequence of images and a natural language instruction as input, and directly outputs tokenized low-level motor commands for the robotic arm \cite{brohan2022rt}.}
+    \label{fig:rt1}
+\end{figure}
+
+\subsection{The Action Space Dilemma: Discretization vs. Diffusion}
+The transition from digital perception to physical execution requires defining a mathematical representation for the robotic action space. In the current literature, this creates a fundamental tension between semantic expressiveness and kinematic precision. This dilemma is best illustrated by comparing two foundational open-source models: OpenVLA \cite{kim24openvla} and Octo \cite{ghosh2024octo}.
+
+OpenVLA represents the brute-force scaling approach to robotic control. It is a massive 7-billion parameter model built upon a pre-trained language backbone. To generate physical movement, OpenVLA forces infinite, continuous joint states into 256 discrete vocabulary bins. The mathematical discretization of a continuous 3D space generates quantization errors, fundamentally compromising the smoothness and precision of the resulting kinematics. Furthermore, predicting these discrete action tokens sequentially creates a severe computational bottleneck. This token-by-token generation restricts the model's control loop to a maximum of 4 Hz, rendering it unviable for tasks that require high-frequency, reactive adjustments.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/openvla_architecture.png}
+    \caption{The OpenVLA architecture. Visual features are projected into the embedding space of a 7-billion parameter language model, which outputs robot actions as discretized language tokens \cite{kim24openvla}.}
+    \label{fig:openvla_arch}
+\end{figure}
+
+Conversely, the Octo architecture takes a fundamentally different approach. Instead of predicting text-like tokens, Octo relies on a lightweight transformer-based diffusion policy to output continuous action distributions. Operating at only 93 million parameters, it avoids the sequential latency of autoregressive models and natively generates smooth, continuous trajectories. Because diffusion models capture multi-modal distributions, Octo can naturally execute tasks that have multiple valid paths. However, its reduced parameter scale fundamentally restricts its capacity for higher-order semantic reasoning. While Octo excels at kinematic fluidity, it frequently underperforms compared to OpenVLA when a task requires deep common-sense logic or complex spatial reasoning.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/octo_architecture.png}
+    \caption{The Octo architecture. The model uses a lightweight transformer backbone combined with specialized action heads to output continuous, multi-modal action distributions without relying on tokenization \cite{ghosh2024octo}.}
+    \label{fig:octo_arch}
+\end{figure}
+
+\subsection{Breaking the Autoregressive Bottleneck: OpenVLA-OFT}
+To address the severe latency constraints inherent to autoregressive generation, researchers developed optimized post-training methodologies, most notably Observation-Action Fine-Tuning (OpenVLA-OFT) \cite{kim2025openvlaoft}. This framework explicitly restructures the output mechanics of the foundational OpenVLA model to eliminate the sequential processing bottleneck and restore continuous kinematic control (see Figure \ref{fig:oft_arch}).
+
+OpenVLA-OFT entirely discards the discrete action tokenization paradigm. Instead of utilizing standard causal attention for sequential decoding, the architecture implements a bidirectional attention mask paired with a dedicated Multi-Layer Perceptron (MLP) action head. This structural modification fundamentally enables parallel decoding and action chunking. Rather than predicting individual movements step-by-step, the model takes an empty action embedding and simultaneously decodes an entire sequence of future continuous actions in a single forward pass. Consequently, inference throughput increases exponentially, elevating the control frequency into the 25 to 50 Hz range. This architectural revision mathematically validates the use of a 7-billion parameter language backbone for real-time, closed-loop robotic control.
+
+However, this aggressive latency optimization introduces a distinct vulnerability regarding multi-modal physical environments. OpenVLA-OFT trains its continuous action head utilizing an L1 regression loss objective. While computationally efficient, L1 regression is strictly unimodal; it inherently forces the neural network to predict the deterministic mean of the training data distribution. This becomes highly problematic in complex physical settings featuring multi-modal human demonstrations. For example, if training data demonstrates human operators avoiding a central obstacle by moving either to the left or to the right, the L1 regression objective will mathematically average those two valid trajectories. This results in the generation of a centralized path, frequently driving the robotic end-effector directly into a collision. Therefore, while OFT successfully resolves the computational latency bottleneck, its unimodal output compromises the safety and dexterity of the model in ambiguous spatial scenarios.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/openvla_architecture.png}
+    \caption{The OpenVLA-OFT architecture. By utilizing a bidirectional attention mask and parallel decoding, the model bypasses sequential token generation to output continuous, multi-step action chunks in a single forward pass \cite{kim2025openvlaoft}.}
+    \label{fig:oft_arch}
+\end{figure}
+
+\subsection{The Apex of Continuous Control: The $\pi_0$ Series}
+
+While optimization techniques like OpenVLA-OFT successfully eliminated the latency of autoregressive generation, their reliance on continuous L1 regression created a new vulnerability. Because L1 regression is strictly unimodal, it forces a model to predict the deterministic mean of its training data. In complex physical environments featuring bi-modal human demonstrations, such as navigating either left or right around an obstacle, L1 regression mathematically averages the two distinct paths, frequently resulting in a catastrophic direct collision.
+
+To achieve high-speed control without sacrificing multi-modal safety, researchers introduced the $\pi_0$ foundation model series (see Figure \ref{fig:pi0_overview}) \cite{piblog2024pi0} \cite{black2024pi0arxiv}. This architecture abandons both discrete tokens and rigid regression. Instead, it attaches a specialized action expert module to a Vision-Language Model (VLM) backbone, generating continuous actions via stochastic flow matching. Flow matching operates as a highly efficient, deterministic variant of diffusion models, allowing the system to represent complex continuous action distributions while maintaining a massive action chunking horizon of $H=50$. This ensures fluid, multi-modal kinematic generation.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/Pi0.png}
+    \caption{Overview of the $\pi_0$ generalist robot policy. The model combines a pre-trained Vision-Language Model with a continuous action expert, trained across a massive cross-embodiment dataset to enable zero-shot and specialized manipulation tasks \cite{black2024pi0arxiv}.}
+    \label{fig:pi0_overview}
+\end{figure}
+
+The evolution of this architecture highlights the rapid optimization of continuous control. The open-weights $\pi_{0.5}$ \cite{intelligence2025pi05} \cite{piblog2025pi05} iteration introduced critical structural upgrades designed specifically for open-world generalization. The primary architectural change was embedding strict temporal awareness into the flow-matching mechanism via advanced timestep conditioning. This advanced conditioning allowed the continuous action expert to better understand the temporal flow of long-horizon tasks, preventing the model from losing context during multi-step physical executions. 
+
+This paradigm culminated in the closed-source $\pi_{0.6}$ architecture (see Figure \ref{fig:pi06_loop}) \cite{intelligence2025pi06} \cite{piblog2025pistar06}, a 5-billion parameter model that solved one of the most persistent flaws in VLA design: catastrophic forgetting. Fine-tuning a massive VLM directly on continuous robotic gradients fundamentally degrades and overwrites the model's underlying internet-scale semantic reasoning. To solve this, $\pi_{0.6}$ introduced Knowledge Insulation. It trains the VLM backbone utilizing fully discrete FAST (Fast Action Semantic Tokens) tokens, while strictly, mathematically isolating the continuous action expert's flow-matching gradients from the VLM layers. 
+
+Furthermore, $\pi_{0.6}$ moves beyond simple imitation learning by introducing offline Reinforcement Learning (RL) pre-training techniques, specifically the 'Recap' algorithm. By learning from real-world rollouts and human interventions, this offline RL integration effectively doubles the model's task throughput and vastly optimizes its advantage gap over base imitation policies. This hybrid architecture combining discrete autoregressive reasoning in the backbone with continuous flow-matching in the action head preserves pristine logical reasoning while simultaneously outputting flawless, multi-modal kinematics at control frequencies up to 50 Hz.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/Pi06.png}
+    \caption{The $\pi_{0.6}$ training pipeline. The architecture incorporates advantage conditioning and a reinforcement learning loop (RECAP) to learn from real-world rollouts and human interventions, securely isolating continuous execution from the semantic backbone \cite{intelligence2025pi06}.}
+    \label{fig:pi06_loop}
+\end{figure}
+
+
+
+\chapter{Sim-to-Real Development and Autonomous Integration} %------------------------------ CHAPTER 3
+\thispagestyle{empty}
+
+\section{Introduction: The Path to Pure Autonomy}
+
+The transition from rigid industrial automation to fully autonomous robotics cannot be achieved in a single leap. Deploying experimental, dynamic algorithms directly onto expensive physical hardware introduces unacceptable risks, including catastrophic collisions and mechanical damage. Therefore, achieving true autonomy necessitates a systematic "Sim-to-Real" methodology: developing, testing, and validating the entire robotic pipeline within a safe, physics-accurate digital simulation before transferring control to the physical robot.
+
+This chapter details the chronological development of this autonomous system, tracing its evolution from a foundational digital simulation to a fully operational physical deployment. The architecture of the pipeline was constructed through three progressive phases:
+
+\begin{enumerate}
+    \item \textbf{The Foundational Simulation:} The architecture began by establishing a robust digital sandbox utilizing the Unity Robotics Hub and the Robot Operating System (ROS). This baseline provided the necessary digital environment, kinematic solvers, and basic pick-and-place logic.
+    \item \textbf{Domain Randomization and Data Generation:} To prepare the system for unstructured real-world tasks, the simulation was modified to include spatial domain randomization. By programmatically generating random target positions, the system was transformed into an automated data-generation engine, capable of instantly producing the massive, highly diverse datasets fundamentally required for training Vision-Language-Action (VLA) models.
+    \item \textbf{Physical Hardware Integration:} In the final phase, the validated simulation logic was deployed to the real world. This required developing a robust physical integration pipeline, which included calibrating the physical camera using Planar Homography, establishing a secure TCP network bridge, and programming the proprietary Mitsubishi RV-2SDB industrial controller to safely execute the dynamic spatial targets.
+\end{enumerate}
+
+Through these three phases, this chapter demonstrates the transformation of a rigid digital tutorial into a flexible, data-driven pipeline capable of bridging the gap between simulated intent and physical execution.
+\backmatter
+
+\begingroup %------------------------------ BIBLIOGRAPHY
+  \makeatletter
+  \let\ps@plain\ps@empty
+  \makeatother
+  \addcontentsline{toc}{chapter}{Bibliography}
+  \printbibliography 
+\endgroup
+\end{document}
